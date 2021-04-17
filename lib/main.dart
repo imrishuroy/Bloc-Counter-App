@@ -1,4 +1,5 @@
 import 'package:counter_app/logic/cubit/counter_cubit.dart';
+import 'package:counter_app/presentation/router/app_router.dart';
 import 'package:counter_app/presentation/screens/home_page.dart';
 import 'package:counter_app/presentation/screens/second_screen.dart';
 import 'package:counter_app/presentation/screens/third_screen.dart';
@@ -16,10 +17,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _counterBloc = CounterCubit();
+  final AppRouter _router = AppRouter();
 
   @override
   void dispose() {
     _counterBloc.close();
+    _router.dispose();
     super.dispose();
   }
 
@@ -34,24 +37,25 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      onGenerateRoute: _router.onGenerateRoute,
       // home: BlocProvider<CounterCubit>(
       //   create: (context) => CounterCubit(),
       //   child: HomePage(),
       // ),
-      routes: {
-        '/': (context) => BlocProvider.value(
-              value: _counterBloc,
-              child: HomePage(),
-            ),
-        '/second': (context) => BlocProvider.value(
-              value: _counterBloc,
-              child: SecondScreen(),
-            ),
-        '/third': (context) => BlocProvider.value(
-              value: _counterBloc,
-              child: ThirdScreen(),
-            ),
-      },
+      // routes: {
+      //   '/': (context) => BlocProvider.value(
+      //         value: _counterBloc,
+      //         child: HomePage(),
+      //       ),
+      //   '/second': (context) => BlocProvider.value(
+      //         value: _counterBloc,
+      //         child: SecondScreen(),
+      //       ),
+      //   '/third': (context) => BlocProvider.value(
+      //         value: _counterBloc,
+      //         child: ThirdScreen(),
+      //       ),
+      // },
     );
   }
 }
