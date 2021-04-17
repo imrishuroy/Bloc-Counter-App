@@ -28,7 +28,8 @@ dependencies:
   equatable: ^2.0.0
   flutter_bloc:  ^7.0.0
   test: any
-
+  connectivity_plus: ^1.0.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

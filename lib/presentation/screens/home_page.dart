@@ -1,4 +1,6 @@
+import 'package:counter_app/constants/enums.dart';
 import 'package:counter_app/logic/cubit/counter_cubit.dart';
+import 'package:counter_app/logic/cubit/internet_cubit.dart';
 import 'package:counter_app/presentation/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +15,19 @@ class HomePage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          BlocBuilder<InternetCubit, InternetState>(builder: (context, state) {
+            if (state is InternetConnected &&
+                state.connectionType == ConnectionType.Wifi) {
+              return Text('Wify');
+            } else if (state is InternetConnected &&
+                state.connectionType == ConnectionType.Mobile) {
+              return Text('Mobile');
+            } else if (state is InternetDisconnected) {
+              return Text('Disconnected');
+            }
+            return CircularProgressIndicator();
+          }),
+          SizedBox(height: 20.0),
           BlocConsumer<CounterCubit, CounterState>(
             builder: (context, state) {
               return Text(
