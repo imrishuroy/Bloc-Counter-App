@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:counter_app/logic/cubit/counter_cubit.dart';
-import 'package:counter_app/logic/cubit/internet_cubit.dart';
 
 import 'package:test/test.dart';
 
@@ -25,14 +24,14 @@ void main() {
       'the cubit should emit a CounterState(counterValue:1,wasIncemented:true) when cubit.incement() function is called',
       build: () => counterCubit,
       act: (cubit) => cubit.increment(),
-      expect: () => [CounterState(counterValue: 1, wasIncemented: true)],
+      expect: () => [CounterState(counterValue: 1, wasIncremented: true)],
     );
 
     blocTest(
       'the cubit should emit a CounterState(counterValue:-1,wasIncemented:false) when cubit.decrement() function is called',
       build: () => counterCubit,
       act: (cubit) => cubit.decrement(),
-      expect: () => [CounterState(counterValue: -1, wasIncemented: false)],
+      expect: () => [CounterState(counterValue: -1, wasIncremented: false)],
     );
   });
 }

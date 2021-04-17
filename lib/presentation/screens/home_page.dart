@@ -1,103 +1,173 @@
 import 'package:counter_app/constants/enums.dart';
 import 'package:counter_app/logic/cubit/counter_cubit.dart';
 import 'package:counter_app/logic/cubit/internet_cubit.dart';
-import 'package:counter_app/presentation/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title, this.color}) : super(key: key);
+
+  final String title;
+  final Color color;
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Counter App'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          BlocBuilder<InternetCubit, InternetState>(builder: (context, state) {
-            if (state is InternetConnected &&
-                state.connectionType == ConnectionType.Wifi) {
-              return Text('Wify');
-            } else if (state is InternetConnected &&
-                state.connectionType == ConnectionType.Mobile) {
-              return Text('Mobile');
-            } else if (state is InternetDisconnected) {
-              return Text('Disconnected');
-            }
-            return CircularProgressIndicator();
-          }),
-          SizedBox(height: 20.0),
-          BlocConsumer<CounterCubit, CounterState>(
-            builder: (context, state) {
-              return Text(
-                '${state.counterValue}',
-                style: TextStyle(
-                  fontSize: 40.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              );
-            },
-            listener: (context, state) {
-              if (state.wasIncemented) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Incemented'),
-                  duration: Duration(milliseconds: 300),
-                ));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Decremented'),
-                    duration: Duration(milliseconds: 300)));
-              }
-            },
-          ),
-          SizedBox(height: 20.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.add,
-                  size: 40.0,
-                ),
-                onPressed: () {
-                  BlocProvider.of<CounterCubit>(context).increment();
+    return BlocListener<InternetCubit, InternetState>(
+      listener: (context, state) {
+        if (state is InternetConnected &&
+            state.connectionType == ConnectionType.Wifi) {
+          BlocProvider.of<CounterCubit>(context).increment();
+        } else if (state is InternetConnected &&
+            state.connectionType == ConnectionType.Mobile) {
+          BlocProvider.of<CounterCubit>(context).decrement();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: widget.color,
+          title: Text(widget.title),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              BlocBuilder<InternetCubit, InternetState>(
+                builder: (context, state) {
+                  if (state is InternetConnected &&
+                      state.connectionType == ConnectionType.Wifi) {
+                    return Text(
+                      'Wi-Fi',
+                      style: Theme.of(context).textTheme.headline3.copyWith(
+                            color: Colors.green,
+                          ),
+                    );
+                  } else if (state is InternetConnected &&
+                      state.connectionType == ConnectionType.Mobile) {
+                    return Text(
+                      'Mobile',
+                      style: Theme.of(context).textTheme.headline3.copyWith(
+                            color: Colors.red,
+                          ),
+                    );
+                  } else if (state is InternetDisconnected) {
+                    return Text(
+                      'Disconnected',
+                      style: Theme.of(context).textTheme.headline3.copyWith(
+                            color: Colors.grey,
+                          ),
+                    );
+                  }
+                  return CircularProgressIndicator();
                 },
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.remove,
-                  size: 40.0,
+              Divider(
+                height: 5,
+              ),
+              BlocConsumer<CounterCubit, CounterState>(
+                listener: (context, state) {
+                  if (state.wasIncremented == true) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Incremented!'),
+                        duration: Duration(milliseconds: 300),
+                      ),
+                    );
+                  } else if (state.wasIncremented == false) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Decremented!'),
+                        duration: Duration(milliseconds: 300),
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state.counterValue < 0) {
+                    return Text(
+                      'BRR, NEGATIVE ' + state.counterValue.toString(),
+                      style: Theme.of(context).textTheme.headline4,
+                    );
+                  } else if (state.counterValue % 2 == 0) {
+                    return Text(
+                      'YAAAY ' + state.counterValue.toString(),
+                      style: Theme.of(context).textTheme.headline4,
+                    );
+                  } else if (state.counterValue == 5) {
+                    return Text(
+                      'HMM, NUMBER 5',
+                      style: Theme.of(context).textTheme.headline4,
+                    );
+                  } else
+                    return Text(
+                      state.counterValue.toString(),
+                      style: Theme.of(context).textTheme.headline4,
+                    );
+                },
+              ),
+              // SizedBox(
+              //   height: 24,
+              // ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     FloatingActionButton(
+              //       heroTag: Text('${widget.title}'),
+              //       onPressed: () {
+              //         BlocProvider.of<CounterCubit>(context).decrement();
+              //         // context.bloc<CounterCubit>().decrement();
+              //       },
+              //       tooltip: 'Decrement',
+              //       child: Icon(Icons.remove),
+              //     ),
+              //     FloatingActionButton(
+              //       heroTag: Text('${widget.title} 2nd'),
+              //       onPressed: () {
+              //         // BlocProvider.of<CounterCubit>(context).increment();
+              //         context.bloc<CounterCubit>().increment();
+              //       },
+              //       tooltip: 'Increment',
+              //       child: Icon(Icons.add),
+              //     ),
+              //   ],
+              // ),
+              SizedBox(
+                height: 24,
+              ),
+              MaterialButton(
+                color: Colors.redAccent,
+                child: Text(
+                  'Go to Second Screen',
+                  style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
-                  //context.bloc<CounterCubit>().decrement();
-                  BlocProvider.of<CounterCubit>(context).decrement();
+                  Navigator.of(context).pushNamed(
+                    '/second',
+                  );
+                },
+              ),
+              SizedBox(
+                height: 24,
+              ),
+              MaterialButton(
+                color: Colors.greenAccent,
+                child: Text(
+                  'Go to Third Screen',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                    '/third',
+                  );
                 },
               ),
             ],
           ),
-          SizedBox(height: 30.0),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => BlocProvider.value(
-                    value: BlocProvider.of<CounterCubit>(context),
-                    child: SecondScreen(),
-                  ),
-                ),
-              );
-            },
-            child: Text('Second Screen'),
-          ),
-          SizedBox(height: 30.0),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('/third');
-            },
-            child: Text('Third Screen'),
-          ),
-        ],
+        ),
       ),
     );
   }

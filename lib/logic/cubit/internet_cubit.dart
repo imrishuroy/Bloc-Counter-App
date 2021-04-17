@@ -3,22 +3,21 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:counter_app/constants/enums.dart';
-import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
-import 'package:test/test.dart';
+
+import 'package:meta/meta.dart';
 
 part 'internet_state.dart';
 
 class InternetCubit extends Cubit<InternetState> {
   final Connectivity connectivity;
-  StreamSubscription connectivitySubscription;
+  StreamSubscription connectivityStreamSubscription;
 
   InternetCubit({@required this.connectivity}) : super(InternetLoading()) {
-    monitorInternetCubit();
+    monitorInternetConnection();
   }
 
-  StreamSubscription<ConnectivityResult> monitorInternetCubit() {
-    return connectivitySubscription =
+  StreamSubscription<ConnectivityResult> monitorInternetConnection() {
+    return connectivityStreamSubscription =
         connectivity.onConnectivityChanged.listen((connectivityResult) {
       if (connectivityResult == ConnectivityResult.wifi) {
         emitInternetConnected(ConnectionType.Wifi);
@@ -31,13 +30,13 @@ class InternetCubit extends Cubit<InternetState> {
   }
 
   void emitInternetConnected(ConnectionType _connectionType) =>
-      emits(InternetConnected(connectionType: _connectionType));
+      emit(InternetConnected(connectionType: _connectionType));
 
   void emitInternetDisconnected() => emit(InternetDisconnected());
 
   @override
   Future<void> close() {
-    connectivitySubscription.cancel();
+    connectivityStreamSubscription.cancel();
     return super.close();
   }
 }

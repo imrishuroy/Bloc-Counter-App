@@ -4,30 +4,31 @@ import 'package:counter_app/presentation/screens/third_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
-  //final _counterCubit = CounterCubit();
-  Route onGenerateRoute(RouteSettings routeSettings) {
-    switch (routeSettings.name) {
+  Route onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-          builder: (_) => HomePage(),
+          builder: (_) => HomePage(
+            title: "Home Screen",
+            color: Colors.blueAccent,
+          ),
         );
-        break;
       case '/second':
         return MaterialPageRoute(
-          builder: (_) => SecondScreen(),
+          builder: (_) => SecondScreen(
+            title: "Second Screen",
+            color: Colors.redAccent,
+          ),
         );
-        break;
       case '/third':
         return MaterialPageRoute(
-          builder: (_) => ThirdScreen(),
+          builder: (_) => ThirdScreen(
+            title: "Thirst Screen",
+            color: Colors.greenAccent,
+          ),
         );
-        break;
       default:
         return null;
     }
   }
-
-  // void dispose() {
-  //   _counterCubit.close();
-  // }
 }

@@ -2,65 +2,115 @@ import 'package:counter_app/logic/cubit/counter_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SecondScreen extends StatelessWidget {
+class SecondScreen extends StatefulWidget {
+  SecondScreen({Key key, this.title, this.color}) : super(key: key);
+
+  final String title;
+  final Color color;
+
+  @override
+  _SecondScreenState createState() => _SecondScreenState();
+}
+
+class _SecondScreenState extends State<SecondScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Counter App'),
+        backgroundColor: widget.color,
+        title: Text(widget.title),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          BlocConsumer<CounterCubit, CounterState>(
-            builder: (context, state) {
-              return Text(
-                '${state.counterValue}',
-                style: TextStyle(
-                  fontSize: 40.0,
-                  fontWeight: FontWeight.w600,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'You have pushed the button this many times:',
+            ),
+            BlocConsumer<CounterCubit, CounterState>(
+              listener: (context, state) {
+                if (state.wasIncremented == true) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Incremented!'),
+                      duration: Duration(milliseconds: 300),
+                    ),
+                  );
+                } else if (state.wasIncremented == false) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Decremented!'),
+                      duration: Duration(milliseconds: 300),
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state.counterValue < 0) {
+                  return Text(
+                    'BRR, NEGATIVE ' + state.counterValue.toString(),
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                } else if (state.counterValue % 2 == 0) {
+                  return Text(
+                    'YAAAY ' + state.counterValue.toString(),
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                } else if (state.counterValue == 5) {
+                  return Text(
+                    'HMM, NUMBER 5',
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                } else
+                  return Text(
+                    state.counterValue.toString(),
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+              },
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                FloatingActionButton(
+                  heroTag: Text('${widget.title}'),
+                  backgroundColor: widget.color,
+                  onPressed: () {
+                    BlocProvider.of<CounterCubit>(context).decrement();
+                    // context.bloc<CounterCubit>().decrement();
+                  },
+                  tooltip: 'Decrement',
+                  child: Icon(Icons.remove),
                 ),
-              );
-            },
-            listener: (context, state) {
-              if (state.wasIncemented) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Incemented'),
-                  duration: Duration(milliseconds: 300),
-                ));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Decremented'),
-                    duration: Duration(milliseconds: 300)));
-              }
-            },
-          ),
-          SizedBox(height: 20.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.add,
-                  size: 40.0,
+                FloatingActionButton(
+                  backgroundColor: widget.color,
+                  heroTag: Text('${widget.title} 2nd'),
+                  onPressed: () {
+                    BlocProvider.of<CounterCubit>(context).increment();
+                    //  context.bloc<CounterCubit>().increment();
+                  },
+                  tooltip: 'Increment',
+                  child: Icon(Icons.add),
                 ),
-                onPressed: () {
-                  BlocProvider.of<CounterCubit>(context).increment();
-                },
+              ],
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            MaterialButton(
+              color: Colors.greenAccent,
+              child: Text(
+                'Go to Third Screen',
+                style: TextStyle(color: Colors.white),
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.remove,
-                  size: 40.0,
-                ),
-                onPressed: () {
-                  //context.bloc<CounterCubit>().decrement();
-                  BlocProvider.of<CounterCubit>(context).decrement();
-                },
-              ),
-            ],
-          )
-        ],
+              onPressed: () {
+                Navigator.of(context).pushNamed('/third');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
